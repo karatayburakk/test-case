@@ -1,0 +1,702 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"version": "1.0.0",
+		"title": "Article App",
+		"description": "User system, Article and Comments",
+		"license": {
+			"name": "MIT",
+			"url": "https://opensource.org/licenses/MIT"
+		}
+	},
+	"host": "localhost:9000",
+	"basePath": "/",
+	"tags": [
+		{
+			"name": "Users",
+			"description": "API for users in the system"
+		},
+		{
+			"name": "Articles",
+			"description": "API for articles in the system"
+		}
+	],
+	"schemes": ["http"],
+	"securityDefinitions": {
+		"Bearer": {
+			"type": "apiKey",
+			"name": "Authorization",
+			"in": "header",
+			"description": "Enter the token with `Bearer ` prefix. Example `Bearer asd123zd`"
+		}
+	},
+	"consumes": ["application/json"],
+	"produces": ["application/json"],
+	"paths": {
+		"/auth/signup": {
+			"post": {
+				"tags": ["Users"],
+				"description": "Signup for new user",
+				"parameters": [
+					{
+						"in": "body",
+						"name": "SignupDto",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/SignupDto"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Create new user with email, password and passwordConfirm",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/SignupResponse"
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/auth/signin": {
+			"post": {
+				"tags": ["Users"],
+				"description": "Signing for user",
+				"parameters": [
+					{
+						"in": "body",
+						"name": "SigninDto",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/SigninDto"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Signin successfully!",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/SigninResponse"
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/articles": {
+			"get": {
+				"tags": ["Articles"],
+				"description": "All Articles in the system",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "skip",
+						"type": "number",
+						"description": "How many Articles should skip, default 0"
+					},
+					{
+						"in": "query",
+						"name": "take",
+						"type": "number",
+						"description": "How many Articles should take, defaul 50"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful, All the Articles should be seen",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"articles": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"$ref": "#/definitions/Article"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["Articles"],
+				"description": "Create new Article",
+				"security": [{ "Bearer": [] }],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "CreateArticleDto",
+						"required": true,
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/CreateArticleDto"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "New Article created!",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"article": {
+									"type": "object",
+									"$ref": "#/definitions/Article"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized access",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/articles/{id}": {
+			"get": {
+				"tags": ["Articles"],
+				"description": "Get Article By Id",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"type": "number",
+						"required": true,
+						"description": "Id of the Article"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successfull, Article should be seen",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Article"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"patch": {
+				"tags": ["Articles"],
+				"description": "Update Article By Id",
+				"security": [{ "Bearer": [] }],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"type": "number",
+						"required": true,
+						"description": "Id of the Article"
+					},
+					{
+						"in": "body",
+						"name": "UpdateArticleDto",
+						"required": true,
+						"description": "Title or Content of the Article",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/UpdateArticleDto"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Article successuflly updated",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"updatedArticle": {
+									"type": "object",
+									"$ref": "#/definitions/Article"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized access",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Delete Article By Id",
+				"tags": ["Articles"],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"type": "number"
+					}
+				],
+				"security": [{ "Bearer": [] }],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"401": {
+						"description": "Unauthorized access",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/comments": {
+			"get": {
+				"description": "Get All Comments By Article Id",
+				"tags": ["Comments"],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "articleId",
+						"required": true,
+						"type": "number"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "All the comments for given Article",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"comments": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"$ref": "#/definitions/Comment"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"description": "Create Comment for Article",
+				"tags": ["Comments"],
+				"security": [{ "Bearer": [] }],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "CreateCommentDto",
+						"required": true,
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/CreateCommentDto"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "New Comment Created",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"comment": {
+									"type": "object",
+									"$ref": "#/definitions/Comment"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized access",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/comments/{id}": {
+			"get": {
+				"description": "Get Comment By Id",
+				"tags": ["Comments"],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"description": "Id the Comment",
+						"required": true,
+						"type": "number"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successfull, Comment should be seen",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"comment": {
+									"type": "object",
+									"$ref": "#/definitions/Comment"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"patch": {
+				"description": "Update Comment text By Id",
+				"tags": ["Comments"],
+				"security": [{ "Bearer": [] }],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"description": "Id Of the Comment",
+						"required": true,
+						"type": "number"
+					},
+					{
+						"in": "body",
+						"name": "UpdateCommentDto",
+						"description": "Text of the Comment should be changed",
+						"required": true,
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/UpdateCommentDto"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Comment text successfully updated",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"updatedComment": {
+									"type": "object",
+									"$ref": "#/definitions/Comment"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized access",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"delete": {
+				"description": "Delete the Comment By Id",
+				"tags": ["Comments"],
+				"security": [{ "Bearer": [] }],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"description": "Id of the Comment",
+						"required": true,
+						"type": "number"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"401": {
+						"description": "Unauthorized access",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"SignupResponse": {
+			"type": "object",
+			"properties": {
+				"email": {
+					"type": "string",
+					"example": "example@gmail.com"
+				},
+				"token": {
+					"type": "string",
+					"example": "token-string"
+				}
+			}
+		},
+		"SignupDto": {
+			"properties": {
+				"email": {
+					"type": "string",
+					"example": "example@gmail.com"
+				},
+				"password": {
+					"type": "string",
+					"example": "password123"
+				},
+				"passwordConfirm": {
+					"type": "string",
+					"example": "password123"
+				}
+			}
+		},
+		"SigninDto": {
+			"type": "object",
+			"properties": {
+				"email": {
+					"type": "string",
+					"example": "example@gmail.com"
+				},
+				"password": {
+					"type": "string",
+					"example": "password123"
+				}
+			}
+		},
+		"SigninResponse": {
+			"type": "object",
+			"properties": {
+				"token": {
+					"type": "string",
+					"example": "token-string"
+				}
+			}
+		},
+		"Article": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "number",
+					"example": 1
+				},
+				"title": {
+					"type": "string",
+					"example": "Title of the Article"
+				},
+				"content": {
+					"type": "string",
+					"example": "Content of the Article"
+				},
+				"userId": {
+					"type": "number",
+					"example": 1
+				}
+			}
+		},
+		"CreateArticleDto": {
+			"type": "object",
+			"properties": {
+				"title": {
+					"type": "string",
+					"example": "Title of the Article",
+					"required": ["true"]
+				},
+				"content": {
+					"type": "string",
+					"example": "Content of the Article",
+					"required": ["true"]
+				}
+			}
+		},
+		"UpdateArticleDto": {
+			"type": "object",
+			"properties": {
+				"title": {
+					"type": "string",
+					"example": "Title of the Article",
+					"required": ["false"]
+				},
+				"content": {
+					"type": "string",
+					"example": "Content of the Article",
+					"required": ["false"]
+				}
+			}
+		},
+		"Comment": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "number",
+					"example": 1
+				},
+				"text": {
+					"type": "string",
+					"example": "Text of the Comment"
+				},
+				"articleId": {
+					"type": "number",
+					"example": 1
+				},
+				"userId": {
+					"type": "number",
+					"example": 1
+				}
+			}
+		},
+		"CreateCommentDto": {
+			"type": "object",
+			"properties": {
+				"text": {
+					"type": "string",
+					"example": "Text of the Comment"
+				},
+				"articleId": {
+					"type": "number",
+					"example": 1
+				}
+			}
+		},
+		"UpdateCommentDto": {
+			"type": "object",
+			"properties": {
+				"text": {
+					"type": "string",
+					"example": "Text of the Comment"
+				}
+			}
+		},
+		"Error": {
+			"type": "object",
+			"properties": {
+				"status": {
+					"type": "string",
+					"example": "status of the response"
+				},
+				"message": {
+					"type": "string",
+					"example": "error message"
+				}
+			}
+		}
+	}
+}
