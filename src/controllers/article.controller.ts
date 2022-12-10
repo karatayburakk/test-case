@@ -73,6 +73,12 @@ export const deleteById = catchAsync(async (req: Request, res: Response): Promis
 	return res.status(204).send();
 });
 
+// export const sendDailyArticles = catchAsync(
+// 	async (req: Request, res: Response): Promise<Response> => {
+// 		const artices = await articleRepository.find({where: {createdAt: }})
+// 	},
+// );
+
 function isUserOwnResource(resourceUserId: number, userId: number | undefined): boolean {
 	return resourceUserId === userId;
 }

@@ -6,6 +6,7 @@ import { userRepository } from '../repositories/user.repository';
 import { AppError } from '../utils/AppError';
 import { catchAsync } from '../utils/catch-async';
 import { validateAndConvert } from '../utils/validate-and-convert';
+import { sendEmail } from '../utils/email-sender';
 
 export const signup = catchAsync(async (req: Request, res: Response): Promise<Response> => {
 	const { payload, error } = await validateAndConvert(SignupDto, req.body);
@@ -28,6 +29,8 @@ export const signup = catchAsync(async (req: Request, res: Response): Promise<Re
 
 	return res.status(201).json({
 		email: user.email,
+		createdAt: user.createdAt,
+		updatedAt: user.updatedAt,
 		token,
 	});
 });
@@ -52,6 +55,49 @@ export const signin = catchAsync(async (req: Request, res: Response): Promise<Re
 	});
 });
 
+export const forgotPassword = catchAsync(async (req: Request, res: Response): Promise<Response> => {
+	const { email } = req.body;
+	if (!email) throw new AppError('Pleave provide an email', 400);
+
+	const user = await userRepository.findOneBy({ email });
+	if (!user) throw new AppError('No user for given email', 404);
+
+	const resetPasswordToken = generatePasswordToken(email);
+
+	const resetURL = `${req.protocol}://${req.get('host')}/auth/reset-password/${resetPasswordToken}`;
+
+	await sendEmail({
+		to: user.email,
+		subject: 'Forgot Password',
+		text: `Forgot your Password? Submit a PATCH request with your new password and passwordConfirm to ${resetURL}`,
+	});
+
+	return res.status(200).json({
+		status: 'success',
+		message: 'Password Recover Mail send successfully!',
+	});
+});
+
+export const resetPassword = catchAsync(async (req: Request, res: Response): Promise<Response> => {
+	const { password, passwordConfirm } = req.body;
+	if (!password || !passwordConfirm || password !== passwordConfirm)
+		throw new AppError('Please provide password and passwordConfirm', 400);
+
+	const { token } = req.params;
+	if (!token) throw new AppError('Please provide a token', 400);
+
+	const hashPassword = await encryptPassword(password);
+
+	const decoded = decodeToken(token);
+
+	await userRepository.update({ email: decoded.email }, { password: hashPassword });
+
+	return res.status(200).json({
+		status: 'success',
+		message: 'Password changed successfully!',
+	});
+});
+
 export const protect = catchAsync(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer'))
@@ -61,7 +107,11 @@ export const protect = catchAsync(
 
 		const decoded = decodeToken(token);
 
-		req.userId = decoded.id;
+		const user = await userRepository.findOneBy({ id: decoded.id });
+
+		if (!user) throw new AppError('User with this token no longer exist!', 401);
+
+		req.userId = user.id;
 
 		next();
 	},
@@ -80,6 +130,12 @@ async function encryptPassword(password: string): Promise<string> {
 function generateToken(id: number): string {
 	const payload = { id };
 	const token = jwt.sign(payload, process.env.JWT_SECRET || 'Secret', { expiresIn: '30d' });
+	return token;
+}
+
+function generatePasswordToken(email: string): string {
+	const payload = { email };
+	const token = jwt.sign(payload, process.env.JWT_SECRET || 'Secret', { expiresIn: '10m' });
 	return token;
 }
 

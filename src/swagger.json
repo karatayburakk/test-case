@@ -338,6 +338,18 @@
 						"name": "articleId",
 						"required": true,
 						"type": "number"
+					},
+					{
+						"in": "query",
+						"name": "skip",
+						"type": "number",
+						"description": "How many Articles should skip, default 0"
+					},
+					{
+						"in": "query",
+						"name": "take",
+						"type": "number",
+						"description": "How many Articles should take, defaul 50"
 					}
 				],
 				"responses": {
@@ -547,6 +559,14 @@
 					"type": "string",
 					"example": "example@gmail.com"
 				},
+				"createdAt": {
+					"type": "string",
+					"example": "2022-12-10T13:52:16.272Z"
+				},
+				"updatedAt": {
+					"type": "string",
+					"example": "2022-12-10T13:52:16.272Z"
+				},
 				"token": {
 					"type": "string",
 					"example": "token-string"
@@ -609,6 +629,14 @@
 				"userId": {
 					"type": "number",
 					"example": 1
+				},
+				"createdAt": {
+					"type": "string",
+					"example": "2022-12-10T13:52:16.272Z"
+				},
+				"updatedAt": {
+					"type": "string",
+					"example": "2022-12-10T13:52:16.272Z"
 				}
 			}
 		},
@@ -660,6 +688,14 @@
 				"userId": {
 					"type": "number",
 					"example": 1
+				},
+				"createdAt": {
+					"type": "string",
+					"example": "2022-12-10T13:52:16.272Z"
+				},
+				"updatedAt": {
+					"type": "string",
+					"example": "2022-12-10T13:52:16.272Z"
 				}
 			}
 		},

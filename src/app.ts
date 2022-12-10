@@ -11,6 +11,7 @@ import { authRouter } from './routes/auth.router';
 import { commentRouter } from './routes/comment.router';
 import { globalErrorHandler } from './utils/global-error-handler';
 import { AppError } from './utils/AppError';
+import { dailyEmailSender } from './utils/daily-articles';
 // import swaggerDocs from './utils/swagger';
 
 const app = express();
@@ -37,7 +38,8 @@ function setupExpress(): void {
 
 function startApp(): void {
 	app.listen(port, () => {
-		console.log(`App is now running at ${port}`);
+		console.log(`App is now running at http://locahost:${port}`);
+		console.log(`Api Docs are available at http://localhost:${port}/docs`);
 	});
 }
 
@@ -48,6 +50,8 @@ AppDataSource.initialize()
 		setupExpress();
 
 		startApp();
+
+		dailyEmailSender.start();
 	})
 	.catch(err => {
 		console.error(`Error during Data Source initialization!`, err);
