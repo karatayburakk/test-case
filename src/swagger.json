@@ -142,6 +142,13 @@
 							"type": "object",
 							"$ref": "#/definitions/Error"
 						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
 					}
 				}
 			}

@@ -13,7 +13,6 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, _next:
 	}
 
 	if (err.constructor.name === QueryFailedError.name) {
-		console.log({ err });
 		// Check Conflict Errors
 		if (err.detail.includes('already exists'))
 			return res.status(409).json({ status: 'Conflict', message: err.detail || err.message });

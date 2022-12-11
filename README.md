@@ -31,3 +31,9 @@
 - To start Cron Job for sending Daily Emails run command: **npm run cron-start**
 
 - If terminal is killed, Cron Job will stop and will be no longer working.
+
+## Api Docs
+
+- Swagger is available at /docs path.
+
+- Postman collection avaliable at https://www.getpostman.com/collections/1528480174f181b4a009
