@@ -55,6 +55,22 @@ export const signin = catchAsync(async (req: Request, res: Response): Promise<Re
 	});
 });
 
+export const updatePassword = catchAsync(async (req: Request, res: Response): Promise<Response> => {
+	const { password, passwordConfirm } = req.body;
+
+	if (!password || !passwordConfirm || !isPasswordsMatch(password, passwordConfirm))
+		throw new AppError('Please provide password and passwordConfirm', 400);
+
+	const hashPassword = await encryptPassword(password);
+
+	await userRepository.update({ id: req.userId }, { password: hashPassword });
+
+	return res.status(200).json({
+		status: 'success',
+		message: 'Password changed successfully!',
+	});
+});
+
 export const forgotPassword = catchAsync(async (req: Request, res: Response): Promise<Response> => {
 	const { email } = req.body;
 	if (!email) throw new AppError('Pleave provide an email', 400);
@@ -80,11 +96,11 @@ export const forgotPassword = catchAsync(async (req: Request, res: Response): Pr
 
 export const resetPassword = catchAsync(async (req: Request, res: Response): Promise<Response> => {
 	const { password, passwordConfirm } = req.body;
-	if (!password || !passwordConfirm || password !== passwordConfirm)
+	if (!password || !passwordConfirm || !isPasswordsMatch(password, passwordConfirm))
 		throw new AppError('Please provide password and passwordConfirm', 400);
 
 	const { token } = req.params;
-	if (!token) throw new AppError('Please provide a token', 400);
+	if (!token) throw new AppError('Please provide a valid token', 400);
 
 	const hashPassword = await encryptPassword(password);
 

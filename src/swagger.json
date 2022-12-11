@@ -104,6 +104,158 @@
 				}
 			}
 		},
+		"/auth/update-password": {
+			"patch": {
+				"tags": ["Users"],
+				"security": [{ "Bearer": [] }],
+				"description": "Update Logged in User Password",
+				"parameters": [
+					{
+						"in": "body",
+						"name": "UpdatePasswordDto",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/UpdatePasswordDto"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Password successfully updated!",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"status": {
+									"type": "string",
+									"example": "success"
+								},
+								"message": {
+									"type": "string",
+									"example": "Password changed successfully!"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/auth/forgot-password": {
+			"post": {
+				"tags": ["Users"],
+				"description": "User Forgot Password",
+				"parameters": [
+					{
+						"in": "body",
+						"required": true,
+						"name": "ForgotPasswordDto",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"email": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successfull, email send",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"status": {
+									"type": "string",
+									"example": "success"
+								},
+								"message": {
+									"type": "string",
+									"example": "Password Recover Mail send successfully!"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/auth/reset-password/{token}": {
+			"patch": {
+				"tags": ["Users"],
+				"description": "Reset Password Endpoint",
+				"parameters": [
+					{
+						"in": "body",
+						"name": "ResetPasswordDto",
+						"required": true,
+						"schema": {
+							"type": "object",
+							"properties": {
+								"password": {
+									"type": "string",
+									"example": "pass1234"
+								},
+								"passwordConfirm": {
+									"type": "string",
+									"example": "pass1234"
+								}
+							}
+						}
+					},
+					{
+						"in": "path",
+						"name": "token",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Password changed successfully!",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"status": {
+									"type": "string",
+									"example": "success"
+								},
+								"message": {
+									"type": "string",
+									"example": "Password changed successfully!!"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
 		"/articles": {
 			"get": {
 				"tags": ["Articles"],
@@ -608,6 +760,19 @@
 				"token": {
 					"type": "string",
 					"example": "token-string"
+				}
+			}
+		},
+		"UpdatePasswordDto": {
+			"type": "object",
+			"properties": {
+				"password": {
+					"type": "string",
+					"example": "pass1234"
+				},
+				"passwordConfirm": {
+					"type": "string",
+					"example": "pass1234"
 				}
 			}
 		},
