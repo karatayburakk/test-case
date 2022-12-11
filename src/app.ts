@@ -11,8 +11,6 @@ import { authRouter } from './routes/auth.router';
 import { commentRouter } from './routes/comment.router';
 import { globalErrorHandler } from './utils/global-error-handler';
 import { AppError } from './utils/AppError';
-import { dailyEmailSender } from './utils/daily-articles';
-// import swaggerDocs from './utils/swagger';
 
 const app = express();
 app.use(express.json());
@@ -26,8 +24,6 @@ function setupExpress(): void {
 	app.use('/comments', commentRouter);
 
 	app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-	// swaggerDocs(app, port);
 
 	app.all('*', (req: Request, res: Response, next: NextFunction): void => {
 		return next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
@@ -50,8 +46,6 @@ AppDataSource.initialize()
 		setupExpress();
 
 		startApp();
-
-		dailyEmailSender.start();
 	})
 	.catch(err => {
 		console.error(`Error during Data Source initialization!`, err);

@@ -6,7 +6,9 @@
 	"scripts": {
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
 		"compile": "tsc",
-		"start:dev": "tsc-watch --onSuccess \"node dist/app.js\""
+		"start:dev": "tsc-watch --onSuccess \"node dist/app.js\"",
+		"start": "npm run compile && docker compose up",
+		"cron-start": "npm run compile && node dist/utils/cron-manual-script.js --start"
 	},
 	"repository": {
 		"type": "git",

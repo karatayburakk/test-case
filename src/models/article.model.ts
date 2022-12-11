@@ -22,6 +22,9 @@ export class Article {
 	@Column({ nullable: false })
 	content: string;
 
+	@Column({ default: false, select: false })
+	wasSentByEmail: boolean;
+
 	@ManyToOne(() => User, user => user.articles, { nullable: false, cascade: true })
 	@JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
 	user: User;

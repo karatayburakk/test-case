@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import { AppError } from './AppError';
 
 interface MailOptions {
-	to: string;
+	to: string | Array<string>;
 	subject: string;
 	text: string;
 }
